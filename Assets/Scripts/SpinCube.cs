@@ -37,7 +37,7 @@ public class SpinCube : MonoBehaviour
 
 			if(touch.phase == TouchPhase.Began) {
 				// calculate screen position
-				Vector3 newPos = new Vector3((touch.position.x / width * 12) - 2, (touch.position.y / height) * 10, 0);
+				Vector3 newPos = Camera.main.ScreenToWorldPoint(touch.position);
 				debugText.text = "touchpos = " + newPos.ToString("0.00");
 				// create new particle explosion at the position of the touch in screeen space
 				ParticleSystem ps =  Instantiate(touchExplosion, newPos, Quaternion.identity);
@@ -46,6 +46,7 @@ public class SpinCube : MonoBehaviour
 				cubeMarker.transform.localScale = Vector3.one * 0.5f;
 				// destroy the particle system after the duration of the particle system
 				Destroy(ps.gameObject, touchExplosion.main.duration);
+				Destroy(cubeMarker, 3);
 			}
 		}
 
