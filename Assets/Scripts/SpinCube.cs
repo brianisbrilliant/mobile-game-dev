@@ -18,7 +18,7 @@ public class SpinCube : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        spinDirection = Random.rotation;
+        NewSpin();
 
         // center of the screen
         width = (float)Screen.width;
@@ -38,6 +38,7 @@ public class SpinCube : MonoBehaviour
 			if(touch.phase == TouchPhase.Began) {
 				// calculate screen position
 				Vector3 newPos = Camera.main.ScreenToWorldPoint(touch.position);
+				newPos.z = 0;
 				debugText.text = "touchpos = " + newPos.ToString("0.00");
 				// create new particle explosion at the position of the touch in screeen space
 				ParticleSystem ps =  Instantiate(touchExplosion, newPos, Quaternion.identity);
@@ -96,5 +97,42 @@ public class SpinCube : MonoBehaviour
         isHalfSpeed = !isHalfSpeed;
     }
 
-	public void NewSpin() { spinDirection = Random.rotation; }
+	public void NewSpin() { 
+		spinDirection = Random.rotation;
+		Debug.Log("spinSpeed = " + spinDirection.ToString("0.0"));
+		LineColor(spinDirection.x);
+	}
+
+	// line color changer.
+	void LineColor(float input) {
+		Debug.Log("Input = " + input);
+
+		input = Mathf.Abs(input);
+
+		// if(input > 1){ 
+		// 	input = Random.value;
+		// }
+		// else if(input < 0) {
+		// 	input = Random.value;
+		// }
+
+		TrailRenderer[] lrs = GetComponentsInChildren<TrailRenderer>();
+		Debug.Log("there are " + lrs.Length + " children.");
+		for(int i = 0; i < lrs.Length; i++) {
+			Gradient gradient = new Gradient();
+			gradient.SetKeys(
+				new GradientColorKey[] { 
+							new GradientColorKey(Color.HSVToRGB(input, Random.Range(0.8f, 0.9f), 1), 0.0f),
+							new GradientColorKey(Color.HSVToRGB(input, Random.Range(0.8f, 0.9f), 1), 0.35f), 
+							new GradientColorKey(Color.HSVToRGB(input, Random.Range(0.8f, 0.9f), 1), 1.0f) },
+				new GradientAlphaKey[] { 
+							new GradientAlphaKey(Random.Range(0.9f, 1), 0.0f), 
+							new GradientAlphaKey(Random.Range(0.5f, 1), 0.8f), 
+							new GradientAlphaKey(Random.Range(0.0f, 0.2f), 1.0f) }
+			);
+			lrs[i].colorGradient = gradient;
+			lrs[i].startWidth = Random.Range(0.2f,0.4f);
+			lrs[i].endWidth = Random.Range(0.0f,0.1f);
+		}
+	}
 }
